@@ -117,7 +117,7 @@ Linefeeds have been modified for this example to show as ^L.
 Some users may wish to typeset the header using MLA mode, which reads in 4 comments at the start of the document and a 5th line with a section header, and will use the last name from the name provided to typeset the page headers.
 The title of the document will also then be corrected to title case from all caps.
 ## typset -- pipeline typesetting text
-typeset is a meta-script to typeset a document straight from the first form. Certain flags are ignored and this is primarily a convience wrapper for certain settings commonly used when typesetting the documents I work with.
+``typset`` is a meta-script to typeset a document straight from the first form. Certain flags are ignored and this is primarily a convience wrapper for certain settings commonly used when typesetting the documents I work with.
 All you need to do is set the page width and length, and you get nice output like below:
 ```
 $ typset -L10 -w40  Example.txt
