@@ -1,0 +1,125 @@
+#!/usr/bin/python
+# join single-sentence lines into paragraphs
+
+# This program takes in a prose text file where each line is a sentence, and optionally semantic paragraphs are separated by empty lines.
+# It then outputs a modified text file, where each semantic paragraph is connected into a single line.
+# If line mode is enabled, then every N lines is joined. Empty lines will still be treated as separators.
+# If chapter mode is enabled, then lines in all caps will not be changed.
+# Lines starting in comments (#) or notes (//) will be left alone.
+import getopt
+import stat
+import os
+import sys
+import string
+
+LINES_PER_PARAGRAPH = 0
+SENTENCE_SPACING = 1
+CHAPTER_MODE = True
+QUOTE_MODE = True
+
+short_options = "cl:qS:hv"
+long_options = [
+    "no-chapter-mode",
+    "lines-per-paragraph=",
+    "no-quote-mode",
+    "sentence-spacing=",
+    "help",
+    "version",
+]
+
+try:
+    options, positional_arguments = getopt.gnu_getopt(
+        sys.argv[1:], short_options, long_options
+    )
+except getopt.GetoptError as error:
+    print(f"lj: '-{error.opt}': Option not recognized")
+    sys.exit(1)
+
+for option in options:
+    argument = option[1]
+    option = option[0]
+
+    if option == "-h" or option == "--help":
+        print("Usage: lj [OPTION]... [FILE]")
+        print("Join sentences in a file using empty lines as paragraph breaks")
+        sys.exit(0)
+    elif option == "-v" or option == "--version":
+        print("lj v1.0.0")
+        sys.exit(0)
+    elif option == "-c" or option == "--no-chapter-mode":
+        CHAPTER_MODE = False
+    elif option == "-l" or option == "--lines-per-paragraph":
+        try:
+            LINES_PER_PARAGRAPH = int(argument)
+            if LINES_PER_PARAGRAPH < 0:
+                raise ValueError
+        except ValueError:
+            print(f"lj: '{LINES_PER_PARAGRAPH}': Invalid paragraph length")
+            sys.exit(1)
+    elif option == "-q" or option == "--no-quote-mode":
+        QUOTE_MODE = False
+    elif option == "-S" or option == "--sentence-spacing":
+        try:
+            SENTENCE_SPACING = int(argument)
+            if SENTENCE_SPACING < 0:
+                raise ValueError
+        except ValueError:
+            print(f"lj: '{SENTENCE_SPACING}': Invalid sentence spacing")
+            sys.exit(1)
+
+if not positional_arguments:
+    if stat.S_ISFIFO(os.fstat(0).st_mode):
+        input_file = "-"
+    else:
+        print("lj: Missing operand")
+        sys.exit(1)
+else:
+    if len(positional_arguments) > 1:
+        print("lj: Too many arguments")
+        sys.exit(1)
+    else:
+        input_file = positional_arguments[0]
+
+if input_file == "-":
+    all_lines = sys.stdin.read().splitlines()
+else:
+    if os.path.isfile(input_file):
+        pass
+    elif os.path.isfile(f"{os.getcwd}/{input_file}"):
+        input_file = f"{os.getcwd}/{input_file}"
+    elif os.path.isdir(input_file) or os.path.isdir(f"{os.getcwd}/{input_file}"):
+        print(f"lj: {input_file}: Is a directory")
+        sys.exit(1)
+    else:
+        print(f"lj: {input_file}: No such file or directory")
+        sys.exit(1)
+
+    with open(input_file, mode="r", encoding="utf8") as text_file:
+        all_lines = text_file.read().splitlines()
+
+line = ""
+lines_in_paragraph = 0
+for sentence in all_lines:
+    line = line.strip()
+    sentence = sentence.strip()
+
+    if (
+        sentence == ""
+        or (LINES_PER_PARAGRAPH and lines_in_paragraph == LINES_PER_PARAGRAPH)
+        or (
+            CHAPTER_MODE
+            and line == line.upper()
+            and any(char in string.ascii_uppercase for char in line)
+        )
+        or (QUOTE_MODE and sentence[0] == '"' and sentence[-1] == '"')
+        or (sentence.startswith("//") or sentence.startswith("#"))
+    ):
+        if line:
+            print(line)
+        print(sentence)
+        line = ""
+        lines_in_paragraph = 0
+    else:
+        lines_in_paragraph += 1
+        line = f"{line}{' ' * SENTENCE_SPACING}{sentence}"
+print(line)

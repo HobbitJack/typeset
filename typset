@@ -1,0 +1,99 @@
+#!/usr/bin/python
+# typeset text with the typeset pipeline
+
+# This program takes in a prose text file where each line is a sentence, and optionally semantic paragraphs are separated by empty lines.
+# It then outputs a modified text file, where each semantic paragraph is connected into a single line.
+# If line mode is enabled, then every N lines is joined. Empty lines will still be treated as separators.
+# If chapter mode is enabled, then lines in all caps will not be changed.
+# Lines starting in comments (#) or notes (//) will be left alone.
+import getopt
+import stat
+import os
+import sys
+import string
+
+PAGE_WIDTH = 84
+PAGE_LENGTH = 66
+
+short_options = "L:w:hv"
+long_options = [
+    "page-length",
+    "page-width=",
+    "help",
+    "version",
+]
+
+try:
+    options, positional_arguments = getopt.gnu_getopt(
+        sys.argv[1:], short_options, long_options
+    )
+except getopt.GetoptError as error:
+    print(f"typset: '-{error.opt}': Option not recognized")
+    sys.exit(1)
+
+for option in options:
+    argument = option[1]
+    option = option[0]
+
+    if option == "-h" or option == "--help":
+        print("Usage: typset [OPTION]... [FILE]")
+        print("Typeset text")
+        sys.exit(0)
+    elif option == "-v" or option == "--version":
+        print("typset (typeset) v1.0.0")
+        sys.exit(0)
+    elif option == "-L" or option == "--page-length":
+        try:
+            PAGE_LENGTH = int(argument)
+            if PAGE_LENGTH < 2:
+                raise ValueError
+        except ValueError:
+            print(f"typset: '{PAGE_LENGTH}': Invalid page length")
+            sys.exit(1)
+    elif option == "-w" or option == "--page-width":
+        try:
+            PAGE_WIDTH = int(argument)
+            if PAGE_WIDTH < 8:
+                raise ValueError
+        except ValueError:
+            print(f"typset: '{PAGE_WIDTH}': Invalid page width")
+            sys.exit(1)
+
+if not positional_arguments:
+    if stat.S_ISFIFO(os.fstat(0).st_mode):
+        input_file = "-"
+    else:
+        print("typset: Missing operand")
+        sys.exit(1)
+else:
+    if len(positional_arguments) > 1:
+        print("typset: Too many arguments")
+        sys.exit(1)
+    else:
+        input_file = positional_arguments[0]
+
+temp_file = False
+if input_file == "-":
+    all_lines = sys.stdin.read()
+    temp_file = True
+    input_file = os.popen("mktemp").read().strip()
+    with open(input_file, mode="w") as temp_file:
+        temp_file.write(all_lines)
+else:
+    if os.path.isfile(input_file):
+        pass
+    elif os.path.isfile(f"{os.getcwd}/{input_file}"):
+        input_file = f"{os.getcwd}/{input_file}"
+    elif os.path.isdir(input_file) or os.path.isdir(f"{os.getcwd}/{input_file}"):
+        print(f"typset: {input_file}: Is a directory")
+        sys.exit(1)
+    else:
+        print(f"typset: {input_file}: No such file or directory")
+        sys.exit(1)
+
+pipeline = os.popen(
+    f"lj {input_file} | typ -t4 -M4 -w{PAGE_WIDTH} | pag -L{PAGE_LENGTH} -M4 -w{PAGE_WIDTH}",
+)
+if temp_file:
+    os.remove(input_file)
+print(pipeline.read(), end="")
