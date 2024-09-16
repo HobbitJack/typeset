@@ -1,4 +1,4 @@
-# typeset
+# typset
 A very simple Unix pipeline-based typesetting package.
 
 As of version v1.0.0, ``typset`` consists of three tools.
@@ -10,7 +10,7 @@ First are SECTION TITLES. SECTION TITLES are in all caps and come on their own l
 
 Next are //notes. //notes are lines that start with //C-style comments. Notes are treated as document text, but will not have special formatting like line joining or indenting applied. I use these to make reader's notes stand apart from body text.
 
-Lastly are #comments. #comments are lines that belong in the source document but which are not wanted in the final document -- perhaps some notes about characters, or maybe your thoughts while writing the section. These will be removed by ``typ`` and so will not make it into a final document typeset with the ``typeset`` pipeline.
+Lastly are #comments. #comments are lines that belong in the source document but which are not wanted in the final document -- perhaps some notes about characters, or maybe your thoughts while writing the section. These will be removed by ``typ`` and so will not make it into a final document typeset with the ``typset`` pipeline.
 
 ## ``lj`` -- line join
 ``lj``, or line join, joins lines of text where each line is assumed to be a sentence on its own line.
@@ -116,11 +116,11 @@ document. Oops, there's one more.
 Linefeeds have been modified for this example to show as ^L.
 Some users may wish to typeset the header using MLA mode, which reads in 4 comments at the start of the document and a 5th line with a section header, and will use the last name from the name provided to typeset the page headers.
 The title of the document will also then be corrected to title case from all caps.
-## typeset -- pipeline typesetting text
+## typset -- pipeline typesetting text
 typeset is a meta-script to typeset a document straight from the first form. Certain flags are ignored and this is primarily a convience wrapper for certain settings commonly used when typesetting the documents I work with.
 All you need to do is set the page width and length, and you get nice output like below:
 ```
-$ typeset -L10 -w40  Example.txt
+$ typset -L10 -w40  Example.txt
 
     9/16/2024                 Page 1
 
@@ -157,5 +157,5 @@ Right now, no. Soon, the help messages for each program will be filled out beyon
 # Bugs
 Please file a GitHub issue if you find any bugs or crashes. Alternatively, I'll fix them as I find them.
 # License
-This package is licenesed under the GNU GPLv3.0. See LICENSE for a full list of terms.
+``typset`` is licenesed under the GNU GPLv3.0. See LICENSE for a full list of terms.
 Copyright (C) HobbitJack 2024
