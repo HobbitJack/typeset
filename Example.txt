@@ -1,0 +1,16 @@
+THIS IS THE TITLE OF THIS DOCUMENT
+//This is a note about the nature of this document
+This is a sentence.
+This is also a sentence!
+Is this a third sentence?
+It is!
+And this is even a fifth sentence!
+Wow! That's so cool!
+
+THIS IS A NEW SECTION
+#This is a comment so I can remember where I got some information from
+This is a new paragraph.
+This is another line in the document! Wow!
+"This is a quote from my favorite source!"
+This is the last line in the document.
+Oops, there's one more.
