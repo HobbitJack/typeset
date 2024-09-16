@@ -2,7 +2,7 @@
 A very simple Unix pipeline-based typesetting package.
 
 As of version v1.0.0, ``typset`` consists of three tools.
-All three tools are designed around working with plain text, and a very small and trivial to learn typesetting language applies to help get certain types of special formatting out.
+All included tools are designed around working with plain text, and a very small and trivial to learn typesetting language applies to help get certain types of special formatting out.
 Note that these tools are designed around the way *I* write plain-text documents, as stories and such for my Creative Writing class, and occassionaly as write-ups for other classes. As such, this formatting style may not be what you need.
 The three special types of text are as follows.
 
@@ -23,6 +23,9 @@ THIS IS THE TITLE OF THIS DOCUMENT
 This is a sentence.
 This is also a sentence!
 Is this a third sentence?
+It is!
+And this is even a fifth sentence!
+Wow! That's so cool!
 
 THIS IS A NEW SECTION
 #This is a comment so I can remember where I got some information from
@@ -37,7 +40,7 @@ Applying ``lj`` with no flags produces:
 $ lj Example.txt
 THIS IS THE TITLE OF THIS DOCUMENT
 //This is a note about the nature of this document
-This is a sentence. This is also a sentence! Is this a third sentence? It is! An
+This is a sentence. This is also a sentence! Is this a third sentence? It is! And this is even a fifth sentence! Wow! That's so cool!
 
 THIS IS A NEW SECTION
 #This is a comment so I can remember where I got some information from
@@ -53,25 +56,23 @@ The newline is kept for consistency as depending on what you do with this text, 
 ``typ``, or typeset, typesets lines of text where each line is a paragraph with multiple sentences.
 
 This example demonstrates the use of ``typ``, here applied to the above output from ``lj`` on Example.txt included with this repository.
-Note a shorter line length and tab has been chosen to better show the line-wrapping capability. Defaults are a line width of 84 with a tab width of 8 (same as ``unexpand(1)``).
+Note a shorter line length has been chosen to better show the line-wrapping capability. Defaults is a line width of 84.
 ```
-$ lj Example.txt | typ -w36 -t4
- THIS IS THE TITLE OF THIS DOCUMENT
-This is a note about the nature
-of this document
+$ lj Example.txt | typ -w40
+   THIS IS THE TITLE OF THIS DOCUMENT
+This is a note about the nature of this
+document
 
-    This is a sentence. This is
-also a sentence! Is this a third
-sentence? It is! And this is even
-a fifth sentence! Wow! That's so
-cool!
-       THIS IS A NEW SECTION
-    This is a new paragraph. This
-is another line in the document!
-Wow!
-    "This is a quote from my
+        This is a sentence. This is also
+a sentence! Is this a third sentence?
+It is! And this is even a fifth
+sentence! Wow! That's so cool!
+         THIS IS A NEW SECTION
+        This is a new paragraph. This
+is another line in the document! Wow!
+        "This is a quote from my
 favorite source!"
-    This is the last line in the
+        This is the last line in the
 document. Oops, there's one more.
 ```
 For shorter text, the line length target is roughly 83% of the total line length. For longer lines, where it's less jagged to go to a newline, a target width of 93% is used instead.
@@ -84,37 +85,73 @@ Some flags can also be used to disable centering notes and stripping empty lines
 This example demonstrates the use of ``pag`` on the output of the above ``typ`` example, using Example.txt included with this repository.
 As before, a maximum page length and width different from the defaults of 66 and 84 respectively.
 ```
-$ lj Example.txt | typ -w36 -t4 | pag -L10 -w36
-    9/16/2024              Page 1
+$ lj Example.txt | typ -w40 | pag -L10 -w40
 
- THIS IS THE TITLE OF THIS DOCUMENT
-This is a note about the nature
-of this document
+9/16/2024                         Page 1
 
-    This is a sentence. This is
-also a sentence! Is this a third
+   THIS IS THE TITLE OF THIS DOCUMENT
+This is a note about the nature of this
+document
+
+        This is a sentence. This is also
+a sentence! Is this a third sentence?
 ^L
 
-    9/16/2024              Page 2
+9/16/2024                         Page 2
 
-sentence? It is! And this is even
-a fifth sentence! Wow! That's so
-cool!
-       THIS IS A NEW SECTION
-    This is a new paragraph. This
-is another line in the document!
+It is! And this is even a fifth
+sentence! Wow! That's so cool!
+         THIS IS A NEW SECTION
+        This is a new paragraph. This
+is another line in the document! Wow!
+        "This is a quote from my
 ^L
 
-    9/16/2024              Page 3
+9/16/2024                         Page 3
 
-Wow!
-    "This is a quote from my
 favorite source!"
-    This is the last line in the
+        This is the last line in the
 document. Oops, there's one more.
 ```
+Linefeeds have been modified for this example to show as ^L.
 Some users may wish to typeset the header using MLA mode, which reads in 4 comments at the start of the document and a 5th line with a section header, and will use the last name from the name provided to typeset the page headers.
 The title of the document will also then be corrected to title case from all caps.
+## typeset -- pipeline typesetting text
+typeset is a meta-script to typeset a document straight from the first form. Certain flags are ignored and this is primarily a convience wrapper for certain settings commonly used when typesetting the documents I work with.
+All you need to do is set the page width and length, and you get nice output like below:
+```
+$ typeset -L10 -w40  Example.txt
+
+    9/16/2024                 Page 1
+
+ THIS IS THE TITLE OF THIS DOCUMENT
+    This is a note about the nature
+    of this document
+
+        This is a sentence. This is
+    also a sentence! Is this a third
+^L
+
+    9/16/2024                 Page 2
+
+    sentence? It is! And this is
+    even a fifth sentence! Wow!
+    That's so cool!
+         THIS IS A NEW SECTION
+        This is a new paragraph.
+    This is another line in the
+^L
+
+    9/16/2024                 Page 3
+
+    document! Wow!
+        "This is a quote from my
+    favorite source!"
+        This is the last line in the
+    document. Oops, there's one
+    more.
+```
+Notice how this also includes a margin. Again, linefeeds have been modified for visibility.
 # Documentation
 Right now, no. Soon, the help messages for each program will be filled out beyond usage, and man pages (don't get your hopes up, probably using ``help2man`` if we're being honest) will be written.
 # Bugs
