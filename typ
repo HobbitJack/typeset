@@ -64,7 +64,7 @@ for option in options:
         )
         sys.exit(0)
     elif option == "-v" or option == "--version":
-        print("typ v1.0.0")
+        print("typ v1.0.1")
         sys.exit(0)
     elif option == "-C" or option == "--no-center-chapters":
         CENTER_CHAPTERS = False
@@ -289,3 +289,5 @@ for line in all_lines:
         print(line)
         if DOUBLE_SPACE_PARAGRAPHS and not last_line_note:
             print()
+            if DOUBLE_SPACE_LINES:
+                print()
